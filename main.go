@@ -41,7 +41,7 @@ func recordMetrics() {
 			testNetChainHeight, err := abci.LastBlockHeight(testNetRpc)
 			if err != nil {
 				fmt.Println(err)
-				continue
+				time.Sleep(time.Minute * 10)
 			}
 			testNetCalcHeight := testNetChainHeight / 3600 * 3600
 			checkTestNetBlock.Set(float64(testNetCalcHeight))
@@ -54,7 +54,7 @@ func recordMetrics() {
 			mainNetChainHeight, err := abci.LastBlockHeight(mainNetRpc)
 			if err != nil {
 				fmt.Println(err)
-				continue
+				time.Sleep(time.Minute * 10)
 			}
 			mainNetCalcHeight := mainNetChainHeight / 3600 * 3600
 			checkMainNetBlock.Set(float64(mainNetCalcHeight))
