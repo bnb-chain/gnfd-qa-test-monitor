@@ -8,8 +8,9 @@ import (
 	"net/http"
 )
 
-func LastBlockHeight() (int64, error) {
-	url := `https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org/abci_info?last_block_height`
+func LastBlockHeight(rpc string) (int64, error) {
+	// https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org/abci_info?last_block_height
+	url := fmt.Sprintf("%v/abci_info?last_block_height", rpc)
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err
@@ -23,7 +24,6 @@ func LastBlockHeight() (int64, error) {
 func BsDBInfoBlockHeight(spHost string, height int64) (string, error) {
 	// https://gnfd-testnet-sp1.bnbchain.org/?bsdb-info&block_height=11037600
 	url := fmt.Sprintf("https://%v/?bsdb-info&block_height=%v", spHost, height)
-	//fmt.Println(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
