@@ -87,7 +87,7 @@ func (s *DbShard) CheckDbShard() {
 	sealObjCountArr := make([][]gjson.Result, len(s.checkSpHosts))
 	isErr := false
 	for i, spHost := range s.checkSpHosts {
-		objCount, sealCount, errCode := getSpDbData(spHost, calcHeight)
+		objCount, sealCount, errCode := s.getSpDbData(spHost, calcHeight)
 		if errCode != OK {
 			s.spErrCodeMetrics[i].Set(float64(errCode))
 			isErr = true
@@ -100,7 +100,7 @@ func (s *DbShard) CheckDbShard() {
 		return
 	}
 
-	spIndex, errCode := checkDbData(objCountArr, sealObjCountArr)
+	spIndex, errCode := s.checkDbData(objCountArr, sealObjCountArr)
 	if errCode != OK {
 		s.spErrCodeMetrics[spIndex].Set(float64(errCode))
 		return
@@ -111,7 +111,7 @@ func (s *DbShard) CheckDbShard() {
 	}
 }
 
-func getSpDbData(spHost string, height int64) (objCount, objSealCount []gjson.Result, errCode Code) {
+func (s *DbShard) getSpDbData(spHost string, height int64) (objCount, objSealCount []gjson.Result, errCode Code) {
 	xmlResult, err := abci.BsDBInfoBlockHeight(spHost, height)
 	if err != nil {
 		return nil, nil, GetBlockHeightErr
@@ -138,7 +138,7 @@ func getSpDbData(spHost string, height int64) (objCount, objSealCount []gjson.Re
 	return objCount, objSealCount, OK
 }
 
-func checkDbData(spObjCounts, spObjSealCounts [][]gjson.Result) (spIndex int, errCode Code) {
+func (s *DbShard) checkDbData(spObjCounts, spObjSealCounts [][]gjson.Result) (spIndex int, errCode Code) {
 	for i := 0; i < 64; i++ {
 		sumObject := int64(0)
 		sumSp1 := int64(0)
