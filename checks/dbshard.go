@@ -46,10 +46,18 @@ var (
 		"gnfd-testnet-sp2.nodereal.io",
 		"gnfd-testnet-sp3.nodereal.io",
 	}
+
+	checkBlockMetrics     prometheus.Gauge
+	checkSpErrCodeMetrics []prometheus.Gauge
 )
 
+func initMetrics() {}
+
 func CheckDbShard(checkEnv, checkRpc string, checkSpHosts []string) {
-	checkBlockMetrics := promauto.NewGauge(prometheus.GaugeOpts{Name: fmt.Sprintf("%v_sp_db_shard_check_block_height", checkEnv)})
+	if checkBlockMetrics == nil {
+		checkBlockMetrics = promauto.NewGauge(prometheus.GaugeOpts{Name: fmt.Sprintf("%v_sp_db_shard_check_block_height", checkEnv)})
+	}
+
 	lastChainHeight, err := abci.LastBlockHeight(checkRpc)
 	if err != nil {
 		checkBlockMetrics.Set(float64(GetBlockHeightErr))
@@ -58,14 +66,19 @@ func CheckDbShard(checkEnv, checkRpc string, checkSpHosts []string) {
 	calcHeight := lastChainHeight / 3600 * 3600
 	checkBlockMetrics.Set(float64(calcHeight))
 
-	checkSpErrCodeMetrics := make([]prometheus.Gauge, len(checkSpHosts))
+	if checkSpErrCodeMetrics == nil {
+		checkSpErrCodeMetrics = make([]prometheus.Gauge, len(checkSpHosts))
+	}
+
 	objCountArr := make([][]gjson.Result, len(checkSpHosts))
 	sealObjCountArr := make([][]gjson.Result, len(checkSpHosts))
 	isErr := false
 	for i, spHost := range checkSpHosts {
-		metricsSpHost := strings.Replace(spHost, "-", "_", -1)
-		metricsSpHost = strings.Replace(metricsSpHost, ".", "_", -1)
-		checkSpErrCodeMetrics[i] = promauto.NewGauge(prometheus.GaugeOpts{Name: fmt.Sprintf("%v_sp_db_shard_error_code_%v", checkEnv, metricsSpHost)})
+		if checkSpErrCodeMetrics[i] == nil {
+			metricsSpHost := strings.Replace(spHost, "-", "_", -1)
+			metricsSpHost = strings.Replace(metricsSpHost, ".", "_", -1)
+			checkSpErrCodeMetrics[i] = promauto.NewGauge(prometheus.GaugeOpts{Name: fmt.Sprintf("%v_sp_db_shard_error_code_%v", checkEnv, metricsSpHost)})
+		}
 
 		objCount, sealCount, errCode := getSpDbData(spHost, calcHeight)
 		if errCode != OK {
