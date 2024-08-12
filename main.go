@@ -8,10 +8,12 @@ import (
 )
 
 func recordMetrics() {
+	testNet := checks.NewCheckDbShard("testnet", checks.TestNetRpc, checks.TestNetSpHosts)
+	mainNet := checks.NewCheckDbShard("mainnet", checks.MainNetRpc, checks.MainNetSpHosts)
 	go func() {
 		for {
-			checks.NewCheckDbShard("testnet", checks.TestNetRpc, checks.TestNetSpHosts).CheckDbShard()
-			checks.NewCheckDbShard("mainnet", checks.MainNetRpc, checks.MainNetSpHosts).CheckDbShard()
+			testNet.CheckDbShard()
+			mainNet.CheckDbShard()
 			time.Sleep(time.Minute * 10)
 		}
 	}()
