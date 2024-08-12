@@ -12,7 +12,7 @@ func recordMetrics() {
 		for {
 			checks.NewCheckDbShard("testnet", checks.TestNetRpc, checks.TestNetSpHosts).CheckDbShard()
 			checks.NewCheckDbShard("mainnet", checks.MainNetRpc, checks.MainNetSpHosts).CheckDbShard()
-			time.Sleep(time.Minute * 1)
+			time.Sleep(time.Minute * 10)
 		}
 	}()
 }
