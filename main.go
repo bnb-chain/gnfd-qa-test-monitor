@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func recordMetricsV() {
+func recordMetrics() {
 	go func() {
 		for {
 			checks.CheckDbShard("testnet", checks.TestNetRpc, checks.TestNetSpHosts)
@@ -24,7 +24,7 @@ func recordMetricsV() {
 }
 
 func main() {
-	recordMetricsV()
+	recordMetrics()
 	http.Handle("/metrics", promhttp.Handler())
 	err := http.ListenAndServe(":24367", nil)
 	if err != nil {
