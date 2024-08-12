@@ -51,8 +51,6 @@ var (
 	checkSpErrCodeMetrics []prometheus.Gauge
 )
 
-func initMetrics() {}
-
 func CheckDbShard(checkEnv, checkRpc string, checkSpHosts []string) {
 	if checkBlockMetrics == nil {
 		checkBlockMetrics = promauto.NewGauge(prometheus.GaugeOpts{Name: fmt.Sprintf("%v_sp_db_shard_check_block_height", checkEnv)})
