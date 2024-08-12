@@ -51,12 +51,12 @@ var (
 func CheckDbShard(checkEnv, checkRpc string, checkSpHosts []string) {
 	checkBlockMetrics := promauto.NewGauge(prometheus.GaugeOpts{Name: fmt.Sprintf("%v_sp_db_shard_check_block_height", checkEnv)})
 	lastChainHeight, err := abci.LastBlockHeight(checkRpc)
-	calcHeight := lastChainHeight / 3600 * 3600
-	checkBlockMetrics.Set(float64(calcHeight))
 	if err != nil {
 		checkBlockMetrics.Set(float64(GetBlockHeightErr))
 		return
 	}
+	calcHeight := lastChainHeight / 3600 * 3600
+	checkBlockMetrics.Set(float64(calcHeight))
 
 	checkSpErrCodeMetrics := make([]prometheus.Gauge, len(checkSpHosts))
 	objCountArr := make([][]gjson.Result, len(checkSpHosts))

@@ -17,6 +17,9 @@ func LastBlockHeight(rpc string) (int64, error) {
 	}
 	defer utils.CloseBody(resp.Body)
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err
+	}
 	result := gjson.GetBytes(body, "result.response.last_block_height")
 	return result.Int(), nil
 }
@@ -30,5 +33,8 @@ func BsDBInfoBlockHeight(spHost string, height int64) (string, error) {
 	}
 	defer utils.CloseBody(resp.Body)
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
 	return string(body), nil
 }
