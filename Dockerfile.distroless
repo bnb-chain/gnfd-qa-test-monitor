@@ -16,7 +16,7 @@ RUN git config --global url."https://${GH_TOKEN}@github.com".insteadOf "https://
 RUN apk add --no-cache gcc libstdc++-dev libc-dev
 
 RUN cd /gnfd-qa-test-monitor \
-    && go build -o ./build/monitor main.go
+    && CGO_ENABLED=0 go build -o ./build/monitor main.go
 
 FROM gcr.io/distroless/base-debian11
 
