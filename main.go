@@ -1,32 +1,26 @@
 package main
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/bnb-chain/gnfd-qa-test-monitor/checks"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"time"
 )
 
 func recordMetrics() {
+	testNet := checks.NewCheckDbShard("testnet", checks.TestNetRpc, checks.TestNetSpHosts)
+	mainNet := checks.NewCheckDbShard("mainnet", checks.MainNetRpc, checks.MainNetSpHosts)
 	go func() {
 		for {
-			opsProcessed.Inc()
-			time.Sleep(2 * time.Second)
+			testNet.CheckDbShard()
+			mainNet.CheckDbShard()
+			time.Sleep(time.Minute * 10)
 		}
 	}()
 }
 
-var (
-	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "myapp_processed_ops_total",
-		Help: "The total number of processed events",
-	})
-)
-
 func main() {
 	recordMetrics()
-
 	http.Handle("/metrics", promhttp.Handler())
 	err := http.ListenAndServe(":24367", nil)
 	if err != nil {
