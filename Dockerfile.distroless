@@ -18,13 +18,26 @@ RUN apk add --no-cache gcc libstdc++-dev libc-dev
 RUN cd /gnfd-qa-test-monitor \
     && go build -o ./build/monitor main.go
 
-RUN cd /gnfd-qa-test-monitor && pwd && ls -al
+RUN cd /gnfd-qa-test-monitor/build && pwd && ls -al
 
 FROM alpine:3.17
 
-USER nonroot:nonroot
-WORKDIR /home/nonroot
-# COPY --from=builder --chown=nonroot:nonroot /gnfd-qa-test-monitor/build/monitor $WORKDIR
-COPY --from=builder /gnfd-qa-test-monitor/build/monitor $WORKDIR
+ARG USER=sp
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+ENV WORKDIR=/app
+
+WORKDIR ${WORKDIR}
+
+COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}/
+RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
+USER ${USER_UID}:${USER_GID}
 RUN cd /gnfd-qa-test-monitor && pwd && ls -al
-ENTRYPOINT ["./monitor"]
+ENTRYPOINT ["/app/monitor"]
+
+# USER nonroot:nonroot
+# WORKDIR /home/nonroot
+# COPY --from=builder --chown=nonroot:nonroot /gnfd-qa-test-monitor/build/monitor $WORKDIR
+# RUN cd /gnfd-qa-test-monitor && pwd && ls -al
+# ENTRYPOINT ["./monitor"]
