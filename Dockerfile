@@ -1,5 +1,4 @@
-# FROM alpine
-FROM gcr.io/distroless/static-debian11
+FROM alpine
 
 WORKDIR /build
 
