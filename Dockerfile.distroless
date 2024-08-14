@@ -28,10 +28,10 @@ ARG USER_GID=1000
 
 WORKDIR /app
 
-COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}
+COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}/
 RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
 USER ${USER_UID}:${USER_GID}
-RUN cd /app && pwd && ls -al
+RUN cd ${WORKDIR}/ && pwd && ls -al
 ENTRYPOINT ["/app/monitor"]
 
 # USER nonroot:nonroot
