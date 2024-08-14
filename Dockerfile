@@ -18,7 +18,7 @@ RUN cd /gnfd-qa-test-monitor \
     && go build -o build/monitor main.go
 
 # Pull greenfield into a second stage deploy alpine container
-FROM alpine:3.17
+FROM alpine:3.17 AS deploy
 
 ARG USER=sp
 ARG USER_UID=1000
@@ -40,6 +40,10 @@ WORKDIR ${WORKDIR}
 
 COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}/
 RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
-USER ${USER_UID}:${USER_GID}
 
-ENTRYPOINT ["/app/monitor"]
+
+# distroless image.
+FROM gcr.io/distroless/static-debian11
+COPY --from=deploy /app/monitor /
+USER ${USER_UID}:${USER_GID}
+ENTRYPOINT ["/monitor"]
