@@ -21,12 +21,12 @@ RUN cd /gnfd-qa-test-monitor \
 RUN cd /gnfd-qa-test-monitor/build && pwd && ls -al
 
 FROM alpine:3.17
-
+ENV WORKDIR=/app
 ARG USER=sp
 ARG USER_UID=1000
 ARG USER_GID=1000
 
-WORKDIR /app
+WORKDIR ${WORKDIR}
 
 COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}/
 RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
