@@ -26,14 +26,12 @@ ARG USER=sp
 ARG USER_UID=1000
 ARG USER_GID=1000
 
-ENV WORKDIR=/app
+WORKDIR /app
 
-WORKDIR ${WORKDIR}
-
-COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}/
+COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}
 RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
 USER ${USER_UID}:${USER_GID}
-RUN cd /gnfd-qa-test-monitor && pwd && ls -al
+RUN cd /app && pwd && ls -al
 ENTRYPOINT ["/app/monitor"]
 
 # USER nonroot:nonroot
