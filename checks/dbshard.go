@@ -74,7 +74,6 @@ func NewCheckDbShard(checkEnv, checkRpc string, checkSpHosts []string) *DbShard 
 }
 
 func (s *DbShard) CheckDbShard() {
-
 	lastChainHeight, err := abci.LastBlockHeight(s.checkRpc)
 	if err != nil {
 		s.blockMetrics.Set(float64(GetBlockHeightErr))
@@ -119,7 +118,7 @@ func (s *DbShard) getSpDbData(spHost string, height int64) (objCount, objSealCou
 
 	objectResString := utils.GetXmlPath(xmlResult, "GfSpGetBsDBInfoResponse/ObjectTotalCount")
 	if objectResString == "" {
-		fmt.Printf("sp: %v, ObjectTotalCount error\n", spHost)
+		fmt.Printf("ObjectTotalCount error, %v\n", fmt.Sprintf("https://%v/?bsdb-info&block_height=%v", spHost, height))
 		return nil, nil, GetObjectTotalCountErr
 	} else {
 		objectTotalCount := gjson.Parse(objectResString).Array()
@@ -128,7 +127,7 @@ func (s *DbShard) getSpDbData(spHost string, height int64) (objCount, objSealCou
 
 	objectSealResString := utils.GetXmlPath(xmlResult, "GfSpGetBsDBInfoResponse/ObjectSealCount")
 	if objectSealResString == "" {
-		fmt.Printf("sp: %v, ObjectSealCount error\n", spHost)
+		fmt.Printf("ObjectSealCount error, %v\n", fmt.Sprintf("https://%v/?bsdb-info&block_height=%v", spHost, height))
 		return nil, nil, GetObjectSealCountErr
 	} else {
 		ObjectSealCount := gjson.Parse(objectSealResString).Array()
