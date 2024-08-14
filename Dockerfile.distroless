@@ -20,22 +20,23 @@ RUN cd /gnfd-qa-test-monitor \
 
 RUN cd /gnfd-qa-test-monitor/build && pwd && ls -al
 
-FROM alpine:3.17
-ENV WORKDIR=/app
-ARG USER=sp
-ARG USER_UID=1000
-ARG USER_GID=1000
+# FROM gcr.io/distroless/base-debian11
+# ENV WORKDIR=/app
+# ARG USER=sp
+# ARG USER_UID=1000
+# ARG USER_GID=1000
 
+# WORKDIR ${WORKDIR}
+
+# COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}/
+# RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
+# USER ${USER_UID}:${USER_GID}
+# RUN cd ${WORKDIR}/ && pwd && ls -al
+# ENTRYPOINT ["/app/monitor"]
+
+FROM gcr.io/distroless/base-debian11
+USER nonroot:nonroot
+ENV WORKDIR=/home/nonroot
 WORKDIR ${WORKDIR}
-
-COPY --from=builder /gnfd-qa-test-monitor/build/* ${WORKDIR}/
-RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
-USER ${USER_UID}:${USER_GID}
-RUN cd ${WORKDIR}/ && pwd && ls -al
-ENTRYPOINT ["/app/monitor"]
-
-# USER nonroot:nonroot
-# WORKDIR /home/nonroot
-# COPY --from=builder --chown=nonroot:nonroot /gnfd-qa-test-monitor/build/monitor $WORKDIR
-# RUN cd /gnfd-qa-test-monitor && pwd && ls -al
-# ENTRYPOINT ["./monitor"]
+COPY --from=builder --chown=nonroot:nonroot /gnfd-qa-test-monitor/build/* ${WORKDIR}/
+ENTRYPOINT ["/home/nonroot/monitor"]
