@@ -18,13 +18,12 @@ RUN apk add --no-cache gcc libstdc++-dev libc-dev
 RUN cd /gnfd-qa-test-monitor \
     && go build -o ./build/monitor main.go
 
-FROM gcr.io/distroless/base-debian11
+RUN pwd && ls -al
+
+FROM alpine:3.17
 
 USER nonroot:nonroot
 WORKDIR /home/nonroot
-# COPY --from=builder --chown=nonroot:nonroot /gnfd-qa-test-monitor/build/monitor $WORKDIR
-# ENTRYPOINT ["./monitor"]
-
-COPY --from=builder --chown=nonroot:nonroot /gnfd-qa-test-monitor/build/* ${WORKDIR}/
-
-ENTRYPOINT ["/app/monitor"]
+COPY --from=builder --chown=nonroot:nonroot /gnfd-qa-test-monitor/build/monitor $WORKDIR
+RUN pwd && ls -al
+ENTRYPOINT ["./monitor"]
